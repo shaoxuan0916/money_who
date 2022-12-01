@@ -1,20 +1,21 @@
 import { NextPage } from "next"
 import React, { Dispatch, SetStateAction } from "react"
 import { AiOutlineClose } from "react-icons/ai"
+import { db } from "../firebase"
 
 interface IModalAddProps {
   selectedUser: string
   setShowModal: Dispatch<SetStateAction<boolean>>
-  users: any[]
+  peopleList: any[] | null
 }
 
 const ModalAdd: NextPage<IModalAddProps> = ({
   selectedUser,
   setShowModal,
-  users,
+  peopleList,
 }) => {
   return (
-    <div className="absolute m-auto w-full h-[400px] top-0 left-0 p-6 z-20 shadow-lg rounded-lg bg-green4 ">
+    <div className="absolute m-auto w-full h-auto max-h-[600px] top-0 left-0 p-6 z-20 shadow-lg rounded-lg bg-green4 ">
       {/* Modal Header */}
       <div className="flex justify-between">
         <h3 className="text-xl font-semibold">{selectedUser}</h3>
@@ -28,17 +29,19 @@ const ModalAdd: NextPage<IModalAddProps> = ({
 
       {/* Modal Body */}
       <div className="pt-4">
-        {users.map(
-          (user) =>
-            user !== selectedUser && (
+        {peopleList?.map(
+          (person) =>
+            person !== selectedUser && (
               <div
-                key={user}
+                key={person}
                 className="text-textColor flex items-center p-2 my-4"
               >
-                <h5 className="min-w-[20%] text-lg">{user} :</h5>
+                <h5 className="w-[25%] text-lg">
+                  {person} {` `}
+                </h5>
                 <input
                   type="text"
-                  className="py-1 px-2 rounded-md outline-borderColor w-full"
+                  className="py-1 px-2 w-[60%] rounded-md outline-borderColor"
                 />
 
                 <div className="ml-2 cursor-pointer bg-green1 text-green5 py-1 px-3 rounded-md">

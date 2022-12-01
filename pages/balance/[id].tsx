@@ -42,7 +42,7 @@ const balance: NextPage<IBalanceProps> = () => {
               user !== state.selectedUser && (
                 <div
                   key={user}
-                  className="my-4 px-4 py-2 bg-green4 flex justify-between rounded-md"
+                  className="my-4 px-4 py-4 bg-green4 flex justify-between rounded-md"
                 >
                   <h5 className="text-">{user}</h5>
                   <p className="text-green1">RM 6.30</p>

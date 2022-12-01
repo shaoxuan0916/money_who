@@ -1,12 +1,19 @@
+import { setDoc, collection } from "firebase/firestore"
 import { NextPage } from "next"
 import React, { Dispatch, SetStateAction, useState } from "react"
+import { db } from "../firebase"
 
 interface IAddUserInputProps {
   value: any
   setValue: Dispatch<SetStateAction<any>>
+  handleAdd: () => void
 }
 
-const AddUserInput: NextPage<IAddUserInputProps> = ({ setValue, value }) => {
+const AddUserInput: NextPage<IAddUserInputProps> = ({
+  setValue,
+  value,
+  handleAdd,
+}) => {
   return (
     <div className="flex ">
       <input
@@ -19,7 +26,7 @@ const AddUserInput: NextPage<IAddUserInputProps> = ({ setValue, value }) => {
 
       <div
         className="bg-green1 rounded-r-md py-2 px-6 cursor-pointer hover:bg-green1hover"
-        onClick={() => setValue("")}
+        onClick={handleAdd}
       >
         <p className="text-[#fff] text-xl font-semibold">Add</p>
       </div>

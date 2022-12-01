@@ -5,7 +5,8 @@ import Input from "../components/Input"
 import Button from "../components/Button"
 import Link from "next/link"
 import { createUserWithEmailAndPassword } from "firebase/auth"
-import { auth } from "../firebase"
+import { collection, addDoc } from "firebase/firestore"
+import { auth, db } from "../firebase"
 import { useRouter } from "next/router"
 import useAuthStore from "../store/authStore"
 
@@ -42,6 +43,18 @@ const SignUpPage = () => {
         setError("")
 
         const user = userCredential.user
+
+        // add new user to firestore
+        // try {
+        //   const docRef = addDoc(collection(db, "users"), {
+        //     email: email,
+        //     uid: user.uid,
+        //   })
+
+        //   // console.log("docRef", docRef)
+        // } catch (e) {
+        //   console.error("Error adding document: ", e)
+        // }
 
         // add user to authStore
         addUser(user)
