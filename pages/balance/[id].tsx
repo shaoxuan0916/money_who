@@ -11,7 +11,7 @@ import useMembersStore from "../../store/membersStore"
 
 interface IBalanceProps {}
 
-const balance: NextPage<IBalanceProps> = () => {
+const Balance: NextPage<IBalanceProps> = () => {
   const [user] = useAuthState(auth)
 
   const path = `users/${user?.uid}/members`
@@ -90,4 +90,4 @@ const balance: NextPage<IBalanceProps> = () => {
   )
 }
 
-export default balance
+export default Balance
