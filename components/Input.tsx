@@ -21,12 +21,12 @@ const Input: NextPage<IInputProps> = ({
   clearInput,
   setClearInput,
 }) => {
-  const [val, setVal] = useState<any>()
+  const [val, setVal] = useState<any>("")
 
   const tempFunction = () => {
-    setVal(0)
-    // @ts-ignore
-    setClearInput(false)
+    setVal("")
+
+    setClearInput && setClearInput(false)
   }
 
   useEffect(() => {
