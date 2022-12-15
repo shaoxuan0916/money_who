@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth"
 import Input from "../components/Input"
 import Image from "next/image"
 import logo from "../public/logo-no-background.svg"
@@ -8,48 +7,37 @@ import Link from "next/link"
 import { auth } from "../firebase"
 import { useRouter } from "next/router"
 import useAuthStore from "../store/authStore"
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth"
 
 const LoginPage = () => {
-  const [error, setError] = useState("")
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth)
+
+  const [errorMsg, setErrorMsg] = useState<any>("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const { addUser, userProfile } = useAuthStore()
+  const { addUser } = useAuthStore()
 
   let router = useRouter()
-
-  // not sure where to use
-
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
-  //     addUser(user)
-  //   })
-  //   return unsubscribe
-  // }, [])
 
   const handleLogin = (e: any) => {
     e.preventDefault()
 
     if (email === "" || password === "") {
-      setError("Email or Password cannot be empty")
+      setErrorMsg("Email or Password cannot be empty")
       return
     }
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        setError("")
-        const user = userCredential.user
+    signInWithEmailAndPassword(email, password)
+  }
 
-        // add user to authStore
-        addUser(user)
+  if (user) {
+    router.push(`/home/${user.user.uid}`)
+  }
 
-        // redirect to home page
-        router.push(`/home/${user.uid}`)
-      })
-      .catch((error) => {
-        setError("Email or Password is incorrect")
-      })
+  if (error) {
+    console.log("error------", error)
   }
 
   return (
@@ -64,7 +52,11 @@ const LoginPage = () => {
         <h3 className="text-4xl font-semibold">Log In</h3>
 
         <div className="mt-8">
-          {error && <p className="text-errorMsg">{error}</p>}
+          {error && (
+            <p className="text-errorMsg">
+              {errorMsg ? errorMsg : " Email or Password is incorrect"}
+            </p>
+          )}
 
           <form action="">
             <Input label="Email" placeholder="Your Email" setValue={setEmail} />

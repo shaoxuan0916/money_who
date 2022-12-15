@@ -3,20 +3,25 @@ import Image from "next/image"
 import logo from "../public/logo-no-background.svg"
 import { GiHamburgerMenu } from "react-icons/gi"
 import { useRouter } from "next/router"
-import { signOut } from "firebase/auth"
+import { useSignOut } from "react-firebase-hooks/auth"
 import { auth } from "../firebase"
-import useAuthStore from "../store/authStore"
+import { useAuthState } from "react-firebase-hooks/auth"
 
 const Navbar = () => {
+  const [signOut, loading, error] = useSignOut(auth)
+
   let router = useRouter()
-  const { userProfile, removeUser } = useAuthStore()
+  // const { removeUser } = useAuthStore()
+
+  const [user] = useAuthState(auth)
 
   const [showMenu, setShowMenu] = useState(false)
 
-  const handleLogout = () => {
-    signOut(auth)
+  const handleLogout = async () => {
+    await signOut()
       .then(() => {
-        removeUser()
+        // may be not need store
+        // removeUser()
         console.log("Sign Out Successfully")
         router.push("/login")
       })
@@ -32,7 +37,7 @@ const Navbar = () => {
           <div
             onClick={() =>
               // @ts-ignore
-              userProfile && router.push(`/home/${userProfile.uid}`)
+              user && router.push(`/home/${user.uid}`)
             }
           >
             <Image src={logo} alt="logo" height={38} />
@@ -52,7 +57,7 @@ const Navbar = () => {
                 className="py-4 text-center cursor-pointer"
                 onClick={() => {
                   // @ts-ignore
-                  userProfile && router.push(`/home/${userProfile.uid}`)
+                  user && router.push(`/home/${user.uid}`)
                   setShowMenu(false)
                 }}
               >

@@ -4,18 +4,23 @@ import logo from "../public/logo-no-background.svg"
 import Input from "../components/Input"
 import Button from "../components/Button"
 import Link from "next/link"
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { collection, addDoc } from "firebase/firestore"
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth"
+import { collection, addDoc, setDoc, doc } from "firebase/firestore"
 import { auth, db } from "../firebase"
 import { useRouter } from "next/router"
 import useAuthStore from "../store/authStore"
+import { async } from "@firebase/util"
 
 const SignUpPage = () => {
-  const [error, setError] = useState("")
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth)
+
+  const [errorMsg, setErrorMsg] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const { addUser } = useAuthStore()
+  // maybe not need store
+  // const { addUser } = useAuthStore()
 
   // Todo:
   // const [username, setUsername] = useState("");
@@ -27,7 +32,7 @@ const SignUpPage = () => {
     e.preventDefault()
 
     if (email === "" || password === "") {
-      setError("Email or Password cannot be empty")
+      setErrorMsg("Email or Password cannot be empty")
       return
     }
 
@@ -37,42 +42,45 @@ const SignUpPage = () => {
     //   return
     // }
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        setError("")
+    createUserWithEmailAndPassword(email, password)
+  }
 
-        const user = userCredential.user
+  if (user) {
+    // Signed in
+    setErrorMsg("")
 
-        // add new user to firestore
-        // try {
-        //   const docRef = addDoc(collection(db, "users"), {
-        //     email: email,
-        //     uid: user.uid,
-        //   })
+    // add new user to firestore
+    try {
+      const docRef = setDoc(
+        doc(db, "users", user.user.uid),
+        {
+          email: email,
+          uid: user.user.uid,
+          members: [],
+        },
+        { merge: true }
+      )
 
-        //   // console.log("docRef", docRef)
-        // } catch (e) {
-        //   console.error("Error adding document: ", e)
-        // }
+      router.push(`/home/${user.user.uid}`)
+      // console.log("docRef", docRef)
+    } catch (e) {
+      console.error("Error adding document: ", e)
+    }
+  }
 
-        // add user to authStore
-        addUser(user)
+  if (error) {
+    const errorMsg = error.message
 
-        // redirect to home page
-        router.push(`/home/${user.uid}`)
-      })
-      .catch((error) => {
-        const errorMsg = error.toString()
+    console.log("error", error)
+    console.log("errorToString", errorMsg)
 
-        if (errorMsg.includes("email-already-in-use")) {
-          setError("User Alreay Exist")
-        } else if (errorMsg.includes("invalid-email")) {
-          setError("Invalid Email")
-        } else {
-          setError("Something Went Wrong. Please Try Again.")
-        }
-      })
+    if (errorMsg.includes("email-already-in-use")) {
+      setErrorMsg("User Alreay Exist")
+    } else if (errorMsg.includes("invalid-email")) {
+      setErrorMsg("Invalid Email")
+    } else {
+      setErrorMsg("Something Went Wrong. Please Try Again.")
+    }
   }
 
   return (
@@ -87,7 +95,7 @@ const SignUpPage = () => {
         <h3 className="text-4xl font-semibold">Sign Up</h3>
 
         <div className="mt-8">
-          {error && <p className="text-errorMsg">{error}</p>}
+          {error && <p className="text-errorMsg">{errorMsg}</p>}
 
           {/* <Input label="Username" placeholder="min 6 characters" /> */}
           <form action="">

@@ -18,7 +18,7 @@ const AddUserInput: NextPage<IAddUserInputProps> = ({
     <div className="flex ">
       <input
         type="text"
-        placeholder="Add new user"
+        placeholder="Add new member"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         className="w-full px-4 rounded-l-md outline-none"

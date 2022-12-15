@@ -2,50 +2,56 @@ import React, { useEffect, useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import ModalAdd from "./ModalAdd"
 import { useRouter } from "next/router"
-import useAuthStore from "../store/authStore"
 import { NextPage } from "next"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from "../firebase"
+import Link from "next/link"
 
 interface IUserCardsProps {
-  peopleList: any[]
+  membersList: any[]
+  path: string
 }
 
-const UserCards: NextPage<IUserCardsProps> = ({ peopleList }) => {
+const UserCards: NextPage<IUserCardsProps> = ({ membersList, path }) => {
+  const [user] = useAuthState(auth)
+
   const router = useRouter()
-  const { userProfile } = useAuthStore()
+
   const [showModal, setShowModal] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<any>("")
+
+  // selected member uid
+  const [selectedMember, setSelectedMember] = useState<any>("")
+  const [selectedMemberIndex, setSelectedMemberIndex] = useState<any>("")
 
   return (
     <div className="pt-1 relative">
-      {peopleList &&
+      {membersList && membersList.length !== 0 ? (
         // @ts-ignore
-        Object.values(peopleList).map((person: string, index) => (
+        Object.keys(membersList).map((member: any, index) => (
           <div key={index} className="flex my-4">
             <div className="w-full cursor-pointer  py-3 px-6 bg-green4 rounded-lg flex items-center justify-between">
               <div
                 className="w-full"
                 onClick={() => {
-                  setSelectedUser(person)
-                  console.log("selectedUser", person)
-
-                  userProfile &&
-                    router.push(
-                      {
-                        //@ts-ignore
-                        pathname: `/balance/${userProfile.uid}`,
-                        query: { selectedUser: person },
-                      },
-                      //@ts-ignore
-                      `/balance/${userProfile.uid}`
-                    )
+                  setSelectedMember(membersList[index].uid)
+                  router.push({
+                    //@ts-ignore
+                    pathname: `/balance/${user.uid}`,
+                    query: {
+                      selectedMember: membersList[index].uid,
+                    },
+                  })
                 }}
               >
-                <h3 className="text-borderColor text-lg ">{person}</h3>
+                <h3 className="text-borderColor text-lg ">
+                  {membersList[index].name}
+                </h3>
               </div>
               <div
                 onClick={() => {
                   setShowModal(!showModal)
-                  setSelectedUser(person)
+                  setSelectedMember(membersList[index].uid)
+                  setSelectedMemberIndex(index)
                 }}
                 className="text-green5 ml-4 rounded-full bg-green1 p-3 flex items-center"
               >
@@ -53,13 +59,18 @@ const UserCards: NextPage<IUserCardsProps> = ({ peopleList }) => {
               </div>
             </div>
           </div>
-        ))}
+        ))
+      ) : (
+        <div className="pt-12">No member yet :(</div>
+      )}
 
       {showModal && (
         <ModalAdd
-          selectedUser={selectedUser}
+          path={path}
+          selectedMemberIndex={selectedMemberIndex}
+          selectedMember={selectedMember}
           setShowModal={setShowModal}
-          peopleList={peopleList}
+          membersList={membersList}
         />
       )}
     </div>
