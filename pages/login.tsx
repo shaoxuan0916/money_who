@@ -71,7 +71,7 @@ const LoginPage = () => {
             <Button text="Log In" />
           </div>
           <div className="pt-2 text-green1">
-            <Link href="/signup">Doesn't Have An Account? Sign Up Now</Link>
+            <Link href="/signup">Does not Have An Account? Sign Up Now</Link>
           </div>
         </div>
       </div>
