@@ -5,11 +5,10 @@ import Input from "../components/Input"
 import Button from "../components/Button"
 import Link from "next/link"
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth"
-import { collection, addDoc, setDoc, doc } from "firebase/firestore"
+import { setDoc, doc } from "firebase/firestore"
 import { auth, db } from "../firebase"
 import { useRouter } from "next/router"
 import useAuthStore from "../store/authStore"
-import { async } from "@firebase/util"
 
 const SignUpPage = () => {
   const [createUserWithEmailAndPassword, user, loading, error] =

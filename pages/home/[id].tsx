@@ -7,13 +7,7 @@ import UserCards from "../../components/UserCards"
 import ModalAddAADrawUp from "../../components/ModalAddAADrawUp"
 import ModalClearAll from "../../components/ModalClearAll"
 import { useCollectionData } from "react-firebase-hooks/firestore"
-import {
-  collection,
-  deleteDoc,
-  doc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore"
+import { collection, deleteDoc, doc, setDoc } from "firebase/firestore"
 import { auth, db } from "../../firebase"
 import { useAuthState } from "react-firebase-hooks/auth"
 import useMembersStore from "../../store/membersStore"
@@ -25,7 +19,7 @@ const HomePage = () => {
 
   const path = `users/${user?.uid}/members`
 
-  // update members store
+  // TODO: update members store
   const { addAllMembers, removeAllMembers } = useMembersStore()
 
   // query for react-firebase-hooks
@@ -54,6 +48,7 @@ const HomePage = () => {
   // add new member
   const handleAdd = async () => {
     if (newMember === "" || newMember === undefined) return
+    setNewMember("")
 
     const docRef = doc(db, path, `${newMemberUid}`)
 
@@ -71,8 +66,6 @@ const HomePage = () => {
       },
       { merge: true }
     )
-
-    setNewMember("")
   }
 
   // function update old member(s)'s other members
@@ -88,9 +81,20 @@ const HomePage = () => {
       { name: newMember, uid: uid, money: 0 },
     ]
 
-    await updateDoc(currentDocRef, {
-      otherMembers: newOtherMembersArr,
-    })
+    console.log("newOtherMembersArr", newOtherMembersArr)
+
+    await setDoc(
+      currentDocRef,
+      {
+        otherMembers: newOtherMembersArr,
+      },
+      {
+        merge: true,
+      }
+    )
+    // await updateDoc(currentDocRef, {
+    //   otherMembers: newOtherMembersArr,
+    // })
   }
 
   // function clear all members

@@ -1,4 +1,4 @@
-import { collection, doc, query, updateDoc } from "firebase/firestore"
+import { collection, doc, query, setDoc, updateDoc } from "firebase/firestore"
 import { NextPage } from "next"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useCollectionData } from "react-firebase-hooks/firestore"
@@ -53,9 +53,12 @@ const ModalAdd: NextPage<IModalAddProps> = ({
       )
 
     // calculate amount after changes
-    const updatedAddToAmount =
-      Number(selectedMemberDetails?.otherMembers[updateIndex].money) +
-      Number(amount)
+    const updatedAddToAmount = Number(
+      (
+        Number(selectedMemberDetails?.otherMembers[updateIndex].money) +
+        Number(amount)
+      ).toFixed(2)
+    )
 
     const updatedAddByAmount = updatedAddToAmount * -1
 
@@ -75,31 +78,40 @@ const ModalAdd: NextPage<IModalAddProps> = ({
     const addToRef = doc(db, path, `${addTo}`)
     const addByRef = doc(db, path, `${addBy}`)
 
+    const updatedAddToOtherMembersArr = selectedMemberDetails.otherMembers.map(
+      (item: any) => {
+        if (item.uid === addBy) {
+          return {
+            name: item.name,
+            uid: item.uid,
+            money: updatedAddToAmount,
+          }
+        } else return item
+      }
+    )
+
+    const updatedAddByOtherMembersArr = updateAddByArr.map((item: any) => {
+      if (item.uid === addTo) {
+        return {
+          name: item.name,
+          uid: item.uid,
+          money: updatedAddByAmount,
+        }
+      } else return item
+    })
+
+    // console.log("updatedAddToOtherMembers", updatedAddToOtherMembers)
     // update latest money status to firestore
     membersList &&
       (await Promise.all([
         // update addTo
         await updateDoc(addToRef, {
-          otherMembers: {
-            ...selectedMemberDetails.otherMembers,
-            [updateIndex]: {
-              ...selectedMemberDetails?.otherMembers[updateIndex],
-              money: Number(updatedAddToAmount),
-            },
-          },
+          otherMembers: updatedAddToOtherMembersArr,
         }),
 
         // update addBy
         await updateDoc(addByRef, {
-          otherMembers: {
-            // @ts-ignore
-            ...updateAddByArr,
-            [updateAddByOtherMembersIndex]: {
-              // @ts-ignore
-              ...updateAddByArr[updateAddByOtherMembersIndex],
-              money: Number(updatedAddByAmount),
-            },
-          },
+          otherMembers: updatedAddByOtherMembersArr,
         }),
       ]))
   }

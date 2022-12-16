@@ -7,7 +7,6 @@ import { useCollectionData } from "react-firebase-hooks/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "../../firebase"
 import { collection } from "firebase/firestore"
-import useMembersStore from "../../store/membersStore"
 
 interface IBalanceProps {}
 
