@@ -46,21 +46,22 @@ const SignUpPage = () => {
 
   if (user) {
     // Signed in
-    setErrorMsg("")
+    if (errorMsg) {
+      setErrorMsg("")
+    }
 
     // add new user to firestore
     try {
-      const docRef = setDoc(
+      setDoc(
         doc(db, "users", user.user.uid),
         {
           email: email,
           uid: user.user.uid,
-          members: [],
         },
         { merge: true }
       )
-
       router.push(`/home/${user.user.uid}`)
+
       // console.log("docRef", docRef)
     } catch (e) {
       console.error("Error adding document: ", e)
