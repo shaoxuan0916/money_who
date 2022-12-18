@@ -66,7 +66,7 @@ const Navbar = () => {
               <div
                 className="py-4 text-center cursor-pointer"
                 onClick={() => {
-                  router.push(`/profile`)
+                  user && router.push(`/profile/${user.uid}`)
                 }}
               >
                 Profile

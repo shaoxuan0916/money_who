@@ -92,9 +92,6 @@ const HomePage = () => {
         merge: true,
       }
     )
-    // await updateDoc(currentDocRef, {
-    //   otherMembers: newOtherMembersArr,
-    // })
   }
 
   // function clear all members
@@ -128,18 +125,30 @@ const HomePage = () => {
         />
 
         {/* AA Draw Up button */}
-        <div onClick={() => setShowModalAA(true)} className="py-8">
+        {/* <div onClick={() => setShowModalAA(true)} className="py-8">
           <Button text="AA Draw Up" />
-        </div>
-        {showAddModalAA && <ModalAddAADrawUp setShowModal={setShowModalAA} />}
+        </div> */}
+        {showAddModalAA && (
+          <ModalAddAADrawUp
+            setShowModal={setShowModalAA}
+            membersList={membersList}
+            path={path}
+          />
+        )}
 
         {/* clear all users */}
-        <div
-          onClick={() => setShowModalClear(true)}
-          className="cursor-pointer w-full text-right text-lg font-semibold"
-        >
-          clear
-        </div>
+
+        {membersList && Object.keys(membersList).length > 0 && (
+          <div className="flex justify-between">
+            <div></div>
+            <div
+              onClick={() => setShowModalClear(true)}
+              className="mt-8 cursor-pointer text-right w-[100px] justify text-lg font-semibold"
+            >
+              clear
+            </div>
+          </div>
+        )}
         {showModalClear && (
           <ModalClearAll
             handleClearMember={handleClearMember}
@@ -149,7 +158,7 @@ const HomePage = () => {
 
         {/* User Card */}
         {loading ? (
-          <div>Loading...</div>
+          <div className="mt-8">Loading...</div>
         ) : (
           <UserCards path={path} membersList={membersList} />
         )}

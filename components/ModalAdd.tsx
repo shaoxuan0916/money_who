@@ -24,20 +24,14 @@ const ModalAdd: NextPage<IModalAddProps> = ({
   const [amount, setAmount] = useState<number>(0)
   const [clearInput, setClearInput] = useState<boolean>(false)
 
-  // console.log("memberList", membersList)
-
   const selectedMemberDetails = membersList?.find(
     (item) => item.uid === selectedMember
   )
-
-  // console.log("selectedMemberDetails", selectedMemberDetails)
 
   // function add money --> when click "add" button
   const handleAddMoney = (addBy: any) => {
     // addTo is owner
     const addTo = selectedMember
-
-    // console.log("addBy, addTo", addBy, addTo)
 
     setAmount(0)
     setClearInput(true)
@@ -71,10 +65,6 @@ const ModalAdd: NextPage<IModalAddProps> = ({
     // @ts-ignore
     const updateAddByArr = membersList[updateAddByIndex].otherMembers
 
-    const updateAddByOtherMembersIndex = Object.keys(updateAddByArr).findIndex(
-      (index) => updateAddByArr[index].uid === addTo
-    )
-
     const addToRef = doc(db, path, `${addTo}`)
     const addByRef = doc(db, path, `${addBy}`)
 
@@ -100,7 +90,6 @@ const ModalAdd: NextPage<IModalAddProps> = ({
       } else return item
     })
 
-    // console.log("updatedAddToOtherMembers", updatedAddToOtherMembers)
     // update latest money status to firestore
     membersList &&
       (await Promise.all([
@@ -147,15 +136,6 @@ const ModalAdd: NextPage<IModalAddProps> = ({
                     label={membersList[index].name}
                     setValue={setAmount}
                   />
-                  {/* <h5 className="w-[25%] text-lg">
-                    {membersList[index].name} {` `}
-                  </h5>
-                  <input
-                    value={amount}
-                    onChange={(e: any) => setAmount(e.target.value)}
-                    type="number"
-                    className="py-1 px-2 w-[60%] rounded-md outline-borderColor"
-                  /> */}
 
                   <div
                     onClick={() => handleAddMoney(membersList[index].uid)}

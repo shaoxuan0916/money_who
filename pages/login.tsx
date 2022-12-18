@@ -17,7 +17,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const { addUser } = useAuthStore()
+  // const { addUser } = useAuthStore()
 
   let router = useRouter()
 

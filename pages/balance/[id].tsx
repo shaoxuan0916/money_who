@@ -32,6 +32,14 @@ const Balance: NextPage<IBalanceProps> = () => {
   const selectedMemberDetails = docs && docs[selectedMemberIndex]
 
   // TODO: calculate balance
+  let balance: number = 0
+
+  selectedMemberDetails &&
+    selectedMemberDetails?.otherMembers.map((item: any) => {
+      balance = Number(
+        (Number(item.money) + Number(balance ? balance : 0)).toFixed(2)
+      )
+    })
 
   return (
     <div className="max-w-[600px] mx-auto bg-white min-h-[100vh]">
@@ -53,10 +61,18 @@ const Balance: NextPage<IBalanceProps> = () => {
             </h2>
           </div>
 
-          {/* <div className="flex items-center mt-8">
+          <div className="flex items-center mt-8">
             <p className="text-lg font-semibold">Current Balance :</p>
-            <p className="text-errorMsg text-3xl font-bold ml-4"></p>
-          </div> */}
+            <p
+              className={
+                balance && balance < 0
+                  ? "text-errorMsg text-3xl font-bold ml-4"
+                  : "text-green1 text-3xl font-bold ml-4"
+              }
+            >
+              {balance}
+            </p>
+          </div>
 
           <div className="mt-8">
             {selectedMemberDetails &&
