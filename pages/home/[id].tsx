@@ -160,7 +160,13 @@ const HomePage = () => {
         {loading ? (
           <div className="mt-8">Loading...</div>
         ) : (
-          <UserCards path={path} membersList={membersList} />
+          <div className="">
+            {membersList && membersList.length > 0 ? (
+              <UserCards path={path} membersList={membersList} />
+            ) : (
+              <div className="text-lg mt-16 pl-2">No member yet :(</div>
+            )}
+          </div>
         )}
       </div>
     </div>

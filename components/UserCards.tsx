@@ -24,8 +24,9 @@ const UserCards: NextPage<IUserCardsProps> = ({ membersList, path }) => {
   const [selectedMemberIndex, setSelectedMemberIndex] = useState<any>("")
 
   return (
-    <div className="pt-1 relative">
-      {membersList && membersList.length !== 0 ? (
+    <div className="pt-1 ">
+      {membersList &&
+        membersList.length !== 0 &&
         // @ts-ignore
         Object.keys(membersList).map((member: any, index) => (
           <div key={index} className="flex my-4">
@@ -59,10 +60,7 @@ const UserCards: NextPage<IUserCardsProps> = ({ membersList, path }) => {
               </div>
             </div>
           </div>
-        ))
-      ) : (
-        <div className="pt-12">No member yet :(</div>
-      )}
+        ))}
 
       {showModal && (
         <ModalAdd
