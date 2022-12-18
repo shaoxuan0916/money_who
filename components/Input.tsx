@@ -37,7 +37,7 @@ const Input: NextPage<IInputProps> = ({
     <div className={flex ? "flex items-center w-full" : "my-8"}>
       <p
         className={
-          flex ? "w-[25%] text-lg" : "text-xl font-semibold text-textColor"
+          flex ? "w-[130px] text-lg" : "text-xl font-semibold text-textColor"
         }
       >
         {label}
