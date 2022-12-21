@@ -15,7 +15,9 @@ const ModalClearAll: NextPage<IModalClearAllProps> = ({
   return (
     <div className="relative max-w-[600px]">
       <div className="absolute m-auto w-full h-auto top-[20%] left-0 p-6 z-20 shadow-2xl rounded-lg bg-green4 ">
-        <h3 className="mb-4 text-xl font-semibold">Clear all members ?</h3>
+        <h3 className="mb-4 text-xl font-semibold text-textColor">
+          Clear all members ?
+        </h3>
 
         <div className="flex gap-4">
           <div className="w-full" onClick={handleClearMember}>

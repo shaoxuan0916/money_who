@@ -6,18 +6,18 @@ import Button from "../components/Button"
 import Link from "next/link"
 import { auth } from "../firebase"
 import { useRouter } from "next/router"
-import useAuthStore from "../store/authStore"
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth"
+import useAuthStore from "../store/authStore"
 
 const LoginPage = () => {
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth)
 
-  const [errorMsg, setErrorMsg] = useState<any>("")
+  const { addUser } = useAuthStore()
+
+  const [errorMsg, setErrorMsg] = useState<string>("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-
-  // const { addUser } = useAuthStore()
 
   let router = useRouter()
 
@@ -32,27 +32,36 @@ const LoginPage = () => {
     signInWithEmailAndPassword(email, password)
   }
 
-  if (user) {
-    router.push(`/home/${user.user.uid}`)
-  }
+  useEffect(() => {
+    if (user) {
+      addUser(user.user)
+      router.push(`/home/${user.user.uid}`)
+    }
 
-  if (error) {
-    console.log("error------", error)
-  }
+    if (error) {
+      console.log("error------", error)
+      setErrorMsg("Invalid email or password")
+    }
+  }, [user, error, loading])
 
   return (
-    <div className=" h-[100vh] ">
+    <div className=" h-[100vh] bg-[#fff]">
       <div className="h-[25%] bg-green4 flex items-center justify-center">
         <div>
-          <Image priority src={logo} alt="logo" width={320} height={200} />
+          <Image
+            priority
+            src={logo}
+            alt="logo"
+            style={{ width: "320px", height: "auto" }}
+          />
         </div>
       </div>
 
       <div className="bg-white px-8 pt-12 max-w-[600px] mx-auto">
-        <h3 className="text-4xl font-semibold">Log In</h3>
+        <h3 className="text-4xl font-semibold text-textColor">Log In</h3>
 
         <div className="mt-8">
-          {error && (
+          {errorMsg && (
             <p className="text-errorMsg">
               {errorMsg ? errorMsg : " Email or Password is incorrect"}
             </p>
@@ -68,10 +77,12 @@ const LoginPage = () => {
             />
           </form>
           <div onClick={handleLogin}>
-            <Button text="Log In" />
+            <Button text={loading ? "Logging in ..." : "Log In"} />
           </div>
           <div className="pt-2 text-green1">
-            <Link href="/signup">Does not Have An Account? Sign Up Now</Link>
+            <Link href="/signup">
+              <p>Doesn't Have An & Account? Sign Up Now</p>
+            </Link>
           </div>
         </div>
       </div>

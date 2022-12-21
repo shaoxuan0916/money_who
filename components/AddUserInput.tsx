@@ -21,7 +21,7 @@ const AddUserInput: NextPage<IAddUserInputProps> = ({
         placeholder="Add new member"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="w-full px-4 rounded-l-md outline-none"
+        className="w-full px-4 rounded-l-md outline-none bg-[#fff] text-textColor"
       />
 
       <div

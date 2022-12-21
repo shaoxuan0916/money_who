@@ -43,6 +43,7 @@ const Input: NextPage<IInputProps> = ({
         {label}
       </p>
       <input
+        autoComplete="off"
         value={val}
         onFocus={(e: any) => e.target.select()}
         onChange={(e) => {
@@ -53,8 +54,8 @@ const Input: NextPage<IInputProps> = ({
         type={type ? `${type}` : "text"}
         className={
           flex
-            ? "py-1 px-2 ml-2 w-full rounded-md outline-borderColor"
-            : "border-2 w-full border-borderColor rounded-md px-2 py-1 mt-2 "
+            ? "py-1 px-2 ml-2 w-full rounded-md outline-borderColor bg-[#fff] text-textColor"
+            : "border-2 w-full border-borderColor rounded-md px-2 py-1 mt-2 bg-[#fff] text-textColor"
         }
       />
     </div>

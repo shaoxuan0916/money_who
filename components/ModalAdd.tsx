@@ -4,6 +4,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useCollectionData } from "react-firebase-hooks/firestore"
 import { AiOutlineClose } from "react-icons/ai"
 import { db } from "../firebase"
+import { CurrencyType } from "../store/authStore"
 import Input from "./Input"
 
 interface IModalAddProps {
@@ -12,6 +13,7 @@ interface IModalAddProps {
   selectedMemberIndex: number
   setShowModal: Dispatch<SetStateAction<boolean>>
   membersList: any[] | null
+  currency: CurrencyType
 }
 
 const ModalAdd: NextPage<IModalAddProps> = ({
@@ -20,6 +22,7 @@ const ModalAdd: NextPage<IModalAddProps> = ({
   setShowModal,
   membersList,
   path,
+  currency,
 }) => {
   const [amount, setAmount] = useState<number>(0)
   const [clearInput, setClearInput] = useState<boolean>(false)
@@ -109,10 +112,12 @@ const ModalAdd: NextPage<IModalAddProps> = ({
     <div className="absolute m-auto w-full h-auto max-h-[600px] top-0 left-0 p-6 z-20 shadow-lg rounded-lg bg-green4 ">
       {/* Modal Header */}
       <div className="flex justify-between">
-        <h3 className="text-xl font-semibold">{selectedMemberDetails.name}</h3>
+        <h3 className="text-xl font-semibold text-textColor">
+          {selectedMemberDetails.name}
+        </h3>
         <div
           onClick={() => setShowModal(false)}
-          className="text-2xl font-semibold cursor-pointer"
+          className="text-2xl font-semibold cursor-pointer text-textColor"
         >
           <AiOutlineClose />
         </div>
@@ -133,6 +138,7 @@ const ModalAdd: NextPage<IModalAddProps> = ({
                     clearInput={clearInput}
                     type="number"
                     flex
+                    placeholder={currency}
                     label={membersList[index].name}
                     setValue={setAmount}
                   />

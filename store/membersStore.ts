@@ -2,18 +2,20 @@ import { useEffect } from "react"
 import create from "zustand"
 import { persist } from "zustand/middleware"
 
-const membersStore = (set: any) => ({
-  allMembers: [],
-  addAllMembers: (allPeople: any) => set({allPeople: allPeople}),
-  removeAllMembers: () => set({ allPeople: null }),
-})
+interface MemberState {
+  allMembers: any[]
+  updateMembers: (allMembers: any) => void
+}
 
-const useMembersStore = create(
-    persist(membersStore, {
-      name: "member",
-    })
+const useMembersStore = create<MemberState>()(
+  persist(
+    (set) => ({
+      allMembers: [],
+      updateMembers: (allMembers: any) =>
+        set({ allMembers: allMembers }),
+    }),
+    { name: "allMembers" }
   )
-
-
+)
 
 export default useMembersStore

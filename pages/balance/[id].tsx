@@ -7,21 +7,18 @@ import { useCollectionData } from "react-firebase-hooks/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "../../firebase"
 import { collection } from "firebase/firestore"
+import useMembersStore from "../../store/membersStore"
+import useAuthStore from "../../store/authStore"
 
 interface IBalanceProps {}
 
 const Balance: NextPage<IBalanceProps> = () => {
-  const [user] = useAuthState(auth)
-
-  const path = `users/${user?.uid}/members`
-
-  // query for react-firebase-hooks
-  const query = collection(db, path)
-
-  // from react-firebase-hooks
-  const [docs, loading, error] = useCollectionData(query)
+  const { allMembers } = useMembersStore()
+  const { currency } = useAuthStore()
 
   const router = useRouter()
+
+  const [membersList, setMembersList] = useState<any>()
 
   const selectedMember = router.query.selectedMember
 
@@ -29,9 +26,9 @@ const Balance: NextPage<IBalanceProps> = () => {
   const selectedMemberIndex = Number(selectedMember) - 1
 
   // selected member details
-  const selectedMemberDetails = docs && docs[selectedMemberIndex]
+  const selectedMemberDetails = membersList && membersList[selectedMemberIndex]
 
-  // TODO: calculate balance
+  // calculate balance
   let balance: number = 0
 
   selectedMemberDetails &&
@@ -41,12 +38,16 @@ const Balance: NextPage<IBalanceProps> = () => {
       )
     })
 
+  useEffect(() => {
+    setMembersList(allMembers)
+  }, [])
+
   return (
-    <div className="max-w-[600px] mx-auto bg-white min-h-[100vh]">
+    <div className="max-w-[600px] mx-auto bg-white min-h-[100vh] bg-[#fff]">
       <Navbar />
 
-      {loading ? (
-        <div className="mt-12 ml-20">Loading...</div>
+      {!membersList ? (
+        <div className="mt-12 ml-20 text-textColor">Loading...</div>
       ) : (
         <div className="mt-12 px-4">
           <div className="flex items-center">
@@ -62,15 +63,19 @@ const Balance: NextPage<IBalanceProps> = () => {
           </div>
 
           <div className="flex items-center mt-8">
-            <p className="text-lg font-semibold">Current Balance :</p>
+            <p className="text-lg font-semibold text-textColor">
+              Current Balance :
+            </p>
             <p
               className={
                 balance && balance < 0
-                  ? "text-errorMsg text-3xl font-bold ml-4"
-                  : "text-green1 text-3xl font-bold ml-4"
+                  ? "text-errorMsg text-2xl font-bold ml-4"
+                  : "text-green1 text-2xl font-bold ml-4"
               }
             >
-              {balance}
+              {balance >= 0
+                ? `${currency} ${balance}`
+                : `- ${currency} ${balance * -1}`}
             </p>
           </div>
 
@@ -82,7 +87,7 @@ const Balance: NextPage<IBalanceProps> = () => {
                     key={index}
                     className="my-4 px-4 py-4 bg-green4 flex justify-between rounded-md"
                   >
-                    <h5 className="text-">
+                    <h5 className="text-textColor">
                       {selectedMemberDetails.otherMembers[index].name}
                     </h5>
                     <p
@@ -92,8 +97,11 @@ const Balance: NextPage<IBalanceProps> = () => {
                           : "text-errorMsg"
                       }
                     >
-                      {" "}
-                      {selectedMemberDetails.otherMembers[index].money}
+                      {selectedMemberDetails.otherMembers[index].money >= 0
+                        ? `${currency} ${selectedMemberDetails.otherMembers[index].money}`
+                        : `- ${currency} ${
+                            selectedMemberDetails.otherMembers[index].money * -1
+                          }`}
                     </p>
                   </div>
                 )

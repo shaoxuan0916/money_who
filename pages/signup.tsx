@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import logo from "../public/logo-no-background.svg"
 import Input from "../components/Input"
@@ -14,6 +14,8 @@ const SignUpPage = () => {
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth)
 
+  const { addUser } = useAuthStore()
+
   const [errorMsg, setErrorMsg] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -23,7 +25,7 @@ const SignUpPage = () => {
 
   // Todo:
   // const [username, setUsername] = useState("");
-  // const [confirmPassword, setConfirmPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
   let router = useRouter()
 
@@ -35,6 +37,15 @@ const SignUpPage = () => {
       return
     }
 
+    if (password !== confirmPassword) {
+      setErrorMsg("Password and confirm password doen't match")
+      return
+    }
+
+    if (password.length < 8) {
+      setErrorMsg("Password should at least 8 characters")
+      return
+    }
     // Todo: password checking
 
     // if() {
@@ -44,58 +55,66 @@ const SignUpPage = () => {
     createUserWithEmailAndPassword(email, password)
   }
 
-  if (user) {
-    // Signed in
-    if (errorMsg) {
-      setErrorMsg("")
+  useEffect(() => {
+    if (user) {
+      // Signed in
+      if (errorMsg) {
+        setErrorMsg("")
+      }
+
+      // add new user to firestore
+      try {
+        setDoc(
+          doc(db, "users", user.user.uid),
+          {
+            email: email,
+            uid: user.user.uid,
+          },
+          { merge: true }
+        )
+        addUser(user.user)
+        router.push(`/home/${user.user.uid}`)
+
+        // console.log("docRef", docRef)
+      } catch (e) {
+        console.error("Error adding document: ", e)
+      }
     }
 
-    // add new user to firestore
-    try {
-      setDoc(
-        doc(db, "users", user.user.uid),
-        {
-          email: email,
-          uid: user.user.uid,
-        },
-        { merge: true }
-      )
-      router.push(`/home/${user.user.uid}`)
+    if (error) {
+      const errorMsg = error.message
 
-      // console.log("docRef", docRef)
-    } catch (e) {
-      console.error("Error adding document: ", e)
+      console.log("error", error)
+      console.log("errorToString", errorMsg)
+
+      if (errorMsg.includes("email-already-in-use")) {
+        setErrorMsg("User Alreay Exist")
+      } else if (errorMsg.includes("invalid-email")) {
+        setErrorMsg("Invalid Email")
+      } else {
+        setErrorMsg("Something Went Wrong. Please Try Again.")
+      }
     }
-  }
-
-  if (error) {
-    const errorMsg = error.message
-
-    console.log("error", error)
-    console.log("errorToString", errorMsg)
-
-    if (errorMsg.includes("email-already-in-use")) {
-      setErrorMsg("User Alreay Exist")
-    } else if (errorMsg.includes("invalid-email")) {
-      setErrorMsg("Invalid Email")
-    } else {
-      setErrorMsg("Something Went Wrong. Please Try Again.")
-    }
-  }
+  }, [user, error])
 
   return (
-    <div className=" h-[100vh] ">
+    <div className=" h-[100vh] bg-[#fff]">
       <div className="h-[25%] bg-green4 flex items-center justify-center">
         <div>
-          <Image priority src={logo} alt="logo" width={320} height={200} />
+          <Image
+            priority
+            src={logo}
+            alt="logo"
+            style={{ width: "320px", height: "auto" }}
+          />
         </div>
       </div>
 
-      <div className="bg-white px-8 pt-12 max-w-[600px] mx-auto">
-        <h3 className="text-4xl font-semibold">Sign Up</h3>
+      <div className="px-8 pt-12 max-w-[600px] mx-auto">
+        <h3 className="text-4xl font-semibold text-textColor">Sign Up</h3>
 
         <div className="mt-8">
-          {error && <p className="text-errorMsg">{errorMsg}</p>}
+          {errorMsg && <p className="text-errorMsg">{errorMsg}</p>}
 
           {/* <Input label="Username" placeholder="min 6 characters" /> */}
           <form action="">
@@ -103,18 +122,19 @@ const SignUpPage = () => {
             <Input
               type="password"
               label="Password"
-              placeholder="min 8 charaters include upper and lower case"
+              placeholder="minimum 8 charaters"
               setValue={setPassword}
             />
 
-            {/* <Input
-            label="Confirm Password"
-            placeholder="Re-type your password"
-            setValue={setConfirmPassword}
-          /> */}
+            <Input
+              type="password"
+              label="Confirm Password"
+              placeholder="Re-type your password"
+              setValue={setConfirmPassword}
+            />
           </form>
           <div onClick={handleSignUp}>
-            <Button text="Sign Up" />
+            <Button text={loading ? "Signing Up ..." : "Sign Up"} />
           </div>
           <div className="pt-2 text-green1">
             <Link href="/login">Already Have An Account? Login Now</Link>

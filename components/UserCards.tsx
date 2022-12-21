@@ -6,13 +6,19 @@ import { NextPage } from "next"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "../firebase"
 import Link from "next/link"
+import { CurrencyType } from "../store/authStore"
 
 interface IUserCardsProps {
   membersList: any[]
   path: string
+  currency: CurrencyType
 }
 
-const UserCards: NextPage<IUserCardsProps> = ({ membersList, path }) => {
+const UserCards: NextPage<IUserCardsProps> = ({
+  membersList,
+  path,
+  currency,
+}) => {
   const [user] = useAuthState(auth)
 
   const router = useRouter()
@@ -64,6 +70,7 @@ const UserCards: NextPage<IUserCardsProps> = ({ membersList, path }) => {
 
       {showModal && (
         <ModalAdd
+          currency={currency}
           path={path}
           selectedMemberIndex={selectedMemberIndex}
           selectedMember={selectedMember}

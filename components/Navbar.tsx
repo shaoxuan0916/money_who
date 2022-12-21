@@ -6,12 +6,13 @@ import { useRouter } from "next/router"
 import { useSignOut } from "react-firebase-hooks/auth"
 import { auth } from "../firebase"
 import { useAuthState } from "react-firebase-hooks/auth"
+import useAuthStore from "../store/authStore"
 
 const Navbar = () => {
   const [signOut, loading, error] = useSignOut(auth)
 
   let router = useRouter()
-  // const { removeUser } = useAuthStore()
+  const { removeUser } = useAuthStore()
 
   const [user] = useAuthState(auth)
 
@@ -20,8 +21,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     await signOut()
       .then(() => {
-        // may be not need store
-        // removeUser()
+        removeUser()
         console.log("Sign Out Successfully")
         router.push("/login")
       })

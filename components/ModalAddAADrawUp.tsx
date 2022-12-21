@@ -31,20 +31,23 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
 
     if (amount === 0 || addTo === "") {
       setErrorMsg("Please fill in the blanks")
-
       return
     }
 
-    updateAddToMoney(addTo)
-    updateAddByMoney()
+    await Promise.all([
+      // update all add by(s) other members list
+      updateAddByMoney(),
+      // update add to other members list
+      updateAddToMoney(addTo),
+    ])
 
     setAmount(0)
     setAddTo("")
     setClearInput(true)
   }
 
-  const updateAddToMoney = async (addTo: any) => {
-    // update addTo other members (add amount to all of them)
+  // update addTo other members (add amount to all of them)
+  const updateAddToMoney = (addTo: any) => {
     const addToRef = doc(db, path, `${addTo}`)
 
     const updatedAddToOtherMembersArr = membersList[addTo - 1].otherMembers.map(
@@ -52,25 +55,28 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
         return {
           name: item.name,
           uid: item.uid,
-          money: Number(Number(Number(amount) + Number(item.money)).toFixed(2)),
+          money: Number(Number(Number(item.money) + Number(amount)).toFixed(2)),
         }
       }
     )
 
-    await updateDoc(addToRef, {
+    // console.log("addTo", addToRef, updatedAddToOtherMembersArr)
+    updateDoc(addToRef, {
       otherMembers: updatedAddToOtherMembersArr,
     })
   }
 
+  // update all addBy(s) other members (add amount to all of them)
   const updateAddByMoney = () => {
     membersList &&
-      Object.values(membersList).map(async (member: any) => {
+      Object.values(membersList).map((member: any) => {
         const addByUid = member.uid
         const addByRef = doc(db, path, `${addByUid}`)
 
+        // find current addBy's other members
         const updatedAddByOtherMembersArr = member.otherMembers.map(
           (item: any) => {
-            if (item.uid === addTo) {
+            if (item.uid === Number(addTo)) {
               return {
                 name: item.name,
                 uid: item.uid,
@@ -82,7 +88,8 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
           }
         )
 
-        await updateDoc(addByRef, {
+        // console.log("addBy", addByRef, updatedAddByOtherMembersArr)
+        updateDoc(addByRef, {
           otherMembers: updatedAddByOtherMembersArr,
         })
       })
@@ -93,10 +100,10 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
       <div className="absolute m-auto w-full h-[400px] top-[20%] left-0 p-6 z-20 shadow-lg rounded-lg bg-green4 ">
         {/* Modal Header */}
         <div className="flex justify-between">
-          <h3 className="text-xl font-semibold">AA Draw Up</h3>
+          <h3 className="text-xl font-semibold text-textColor">AA Draw Up</h3>
           <div
             onClick={() => setShowModal(false)}
-            className="text-2xl font-semibold cursor-pointer"
+            className="text-2xl font-semibold cursor-pointer text-textColor"
           >
             <AiOutlineClose />
           </div>
@@ -115,7 +122,7 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
               onChange={(e) => setAddTo(e.target.value)}
               name="who-pays"
               id="who-pays"
-              className="w-full px-4 py-1 rounded-md"
+              className="w-full px-4 py-1 rounded-md text-textColor bg-[#fff]"
             >
               <option value="">Select a member</option>
 

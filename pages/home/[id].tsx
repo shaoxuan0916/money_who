@@ -9,18 +9,16 @@ import ModalClearAll from "../../components/ModalClearAll"
 import { useCollectionData } from "react-firebase-hooks/firestore"
 import { collection, deleteDoc, doc, setDoc } from "firebase/firestore"
 import { auth, db } from "../../firebase"
-import { useAuthState } from "react-firebase-hooks/auth"
 import useMembersStore from "../../store/membersStore"
+import useAuthStore, { currencyOptions } from "../../store/authStore"
 
 const HomePage = () => {
-  const router = useRouter()
+  const { userProfile, currency, updateCurrency } = useAuthStore()
 
-  const [user] = useAuthState(auth)
-
-  const path = `users/${user?.uid}/members`
+  const path = `users/${userProfile?.uid}/members`
 
   // TODO: update members store
-  const { addAllMembers, removeAllMembers } = useMembersStore()
+  const { updateMembers, allMembers } = useMembersStore()
 
   // query for react-firebase-hooks
   const query = collection(db, path)
@@ -29,19 +27,18 @@ const HomePage = () => {
   const [docs, loading, error] = useCollectionData(query)
 
   const [newMember, setNewMember] = useState("")
-  const [membersList, setMembersList] = useState<any>([])
 
   const [showAddModalAA, setShowModalAA] = useState(false)
   const [showModalClear, setShowModalClear] = useState(false)
 
-  const newMemberUid = membersList && Object.keys(membersList).length + 1
+  const newMemberUid = allMembers && Object.keys(allMembers).length + 1
 
   // new member's other members
   const newMemberOtherMembers =
-    membersList &&
-    Object.keys(membersList).map((member, index) => ({
-      name: membersList[index].name,
-      uid: membersList[index].uid,
+    allMembers &&
+    Object.keys(allMembers).map((member, index) => ({
+      name: allMembers[index].name,
+      uid: allMembers[index].uid,
       money: Number(0),
     }))
 
@@ -53,7 +50,7 @@ const HomePage = () => {
     const docRef = doc(db, path, `${newMemberUid}`)
 
     // add new member to old member(s)'s other members
-    Object.keys(membersList).map((member, index) => {
+    Object.keys(allMembers).map((member, index) => {
       updateOtherMembers(newMember, newMemberUid, index)
     })
 
@@ -72,16 +69,14 @@ const HomePage = () => {
   const updateOtherMembers = async (newMember: any, uid: any, index: any) => {
     const currentDocRef = doc(db, path, `${index + 1}`)
 
-    const oldOtherMembers = membersList[index]?.otherMembers
+    // previous other members
+    const oldOtherMembers = allMembers[index]?.otherMembers
 
-    console.log("oldOtherMembers", oldOtherMembers)
-
+    // updated other members
     const newOtherMembersArr = [
       ...oldOtherMembers,
       { name: newMember, uid: uid, money: 0 },
     ]
-
-    console.log("newOtherMembersArr", newOtherMembersArr)
 
     await setDoc(
       currentDocRef,
@@ -96,7 +91,7 @@ const HomePage = () => {
 
   // function clear all members
   const handleClearMember = () => {
-    Object.keys(membersList).map((member, index) => {
+    Object.keys(allMembers).map((member, index) => {
       handleDeleteDoc(index)
     })
 
@@ -109,66 +104,100 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-    setMembersList(docs)
+    updateMembers(docs)
   }, [docs])
 
   return (
     <div className="max-w-[600px] mx-auto bg-green2 min-h-[100vh]">
       <Navbar />
-
-      <div className="pt-12 px-4">
-        {/* Add New User Input */}
-        <AddUserInput
-          value={newMember}
-          setValue={setNewMember}
-          handleAdd={handleAdd}
-        />
-
-        {/* AA Draw Up button */}
-        {/* <div onClick={() => setShowModalAA(true)} className="py-8">
-          <Button text="AA Draw Up" />
-        </div> */}
-        {showAddModalAA && (
-          <ModalAddAADrawUp
-            setShowModal={setShowModalAA}
-            membersList={membersList}
-            path={path}
+      {loading ? (
+        <div className="mt-8 px-4 text-textColor">Loading...</div>
+      ) : (
+        <div className="pt-12 px-4">
+          {/* Add New User Input */}
+          <AddUserInput
+            value={newMember}
+            setValue={setNewMember}
+            handleAdd={handleAdd}
           />
-        )}
 
-        {/* clear all users */}
-
-        {membersList && Object.keys(membersList).length > 0 && (
-          <div className="flex justify-between">
-            <div></div>
-            <div
-              onClick={() => setShowModalClear(true)}
-              className="mt-8 cursor-pointer text-right w-[100px] justify text-lg font-semibold"
-            >
-              clear
+          {/* AA Draw Up button */}
+          {allMembers?.length > 0 && (
+            <div onClick={() => setShowModalAA(true)} className="my-8">
+              <Button text="AA Draw Up" />
             </div>
-          </div>
-        )}
-        {showModalClear && (
-          <ModalClearAll
-            handleClearMember={handleClearMember}
-            setShowModal={setShowModalClear}
-          />
-        )}
+          )}
+          {showAddModalAA && (
+            <ModalAddAADrawUp
+              setShowModal={setShowModalAA}
+              membersList={allMembers}
+              path={path}
+            />
+          )}
 
-        {/* User Card */}
-        {loading ? (
-          <div className="mt-8">Loading...</div>
-        ) : (
+          {/* clear all users and currency*/}
+
+          {allMembers?.length > 0 &&
+            Object.keys(currencyOptions).length > 0 && (
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="">
+                    <select
+                      value={currency}
+                      // @ts-ignore
+                      onChange={(e) => updateCurrency(e.target.value)}
+                      name="who-pays"
+                      id="who-pays"
+                      className="w-[130px] px-2 py-1 rounded-md bg-[#fff] text-textColor"
+                    >
+                      <option value="">Select a currency</option>
+
+                      {currencyOptions &&
+                        Object.values(currencyOptions).map(
+                          (currency, index) => {
+                            return (
+                              <option key={index} value={currency}>
+                                {currency}
+                              </option>
+                            )
+                          }
+                        )}
+                    </select>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setShowModalClear(true)}
+                  className="text-textColor cursor-pointer text-right w-[100px] justify text-lg font-semibold"
+                >
+                  clear
+                </div>
+              </div>
+            )}
+          {showModalClear && (
+            <ModalClearAll
+              handleClearMember={handleClearMember}
+              setShowModal={setShowModalClear}
+            />
+          )}
+
+          {/* User Card */}
+          {/* {loading ? (
+          <div className="mt-8 text-textColor">Loading...</div>
+        ) : ( */}
           <div className="">
-            {membersList && membersList.length > 0 ? (
-              <UserCards path={path} membersList={membersList} />
+            {allMembers && allMembers.length > 0 ? (
+              <UserCards
+                currency={currency}
+                path={path}
+                membersList={allMembers}
+              />
             ) : (
               <div className="text-lg mt-16 pl-2">No member yet :(</div>
             )}
           </div>
-        )}
-      </div>
+          {/* )} */}
+        </div>
+      )}
     </div>
   )
 }
