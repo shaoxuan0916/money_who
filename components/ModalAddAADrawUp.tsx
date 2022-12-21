@@ -24,6 +24,8 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
   const [errorMsg, setErrorMsg] = useState<string>("")
   const [clearInput, setClearInput] = useState<boolean>(false)
 
+  const membersNumber = Number(membersList?.length)
+
   const handleAdd = async (e: any) => {
     setErrorMsg("")
 
@@ -34,20 +36,25 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
       return
     }
 
+    let dividedAmount = amount / membersNumber
+
     await Promise.all([
       // update all add by(s) other members list
-      updateAddByMoney(),
+      updateAddByMoney(dividedAmount),
       // update add to other members list
-      updateAddToMoney(addTo),
+      updateAddToMoney(addTo, dividedAmount),
     ])
 
     setAmount(0)
     setAddTo("")
     setClearInput(true)
+
+    // Todo: add notify
+    setShowModal(false)
   }
 
   // update addTo other members (add amount to all of them)
-  const updateAddToMoney = (addTo: any) => {
+  const updateAddToMoney = (addTo: any, dividedAmount: number) => {
     const addToRef = doc(db, path, `${addTo}`)
 
     const updatedAddToOtherMembersArr = membersList[addTo - 1].otherMembers.map(
@@ -55,7 +62,9 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
         return {
           name: item.name,
           uid: item.uid,
-          money: Number(Number(Number(item.money) + Number(amount)).toFixed(2)),
+          money: Number(
+            Number(Number(item.money) + Number(dividedAmount)).toFixed(2)
+          ),
         }
       }
     )
@@ -67,7 +76,7 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
   }
 
   // update all addBy(s) other members (add amount to all of them)
-  const updateAddByMoney = () => {
+  const updateAddByMoney = (dividedAmount: number) => {
     membersList &&
       Object.values(membersList).map((member: any) => {
         const addByUid = member.uid
@@ -81,7 +90,7 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
                 name: item.name,
                 uid: item.uid,
                 money: Number(
-                  Number(Number(item.money) - Number(amount)).toFixed(2)
+                  Number(Number(item.money) - Number(dividedAmount)).toFixed(2)
                 ),
               }
             } else return item

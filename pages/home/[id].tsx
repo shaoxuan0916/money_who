@@ -120,13 +120,11 @@ const HomePage = () => {
             setValue={setNewMember}
             handleAdd={handleAdd}
           />
-
           {/* AA Draw Up button */}
-          {allMembers?.length > 0 && (
-            <div onClick={() => setShowModalAA(true)} className="my-8">
-              <Button text="AA Draw Up" />
-            </div>
-          )}
+          <div onClick={() => setShowModalAA(true)} className="my-8">
+            <Button text="AA Draw Up" />
+          </div>
+
           {showAddModalAA && (
             <ModalAddAADrawUp
               setShowModal={setShowModalAA}
@@ -134,9 +132,7 @@ const HomePage = () => {
               path={path}
             />
           )}
-
           {/* clear all users and currency*/}
-
           {allMembers?.length > 0 &&
             Object.keys(currencyOptions).length > 0 && (
               <div className="flex justify-between items-center">
@@ -179,7 +175,6 @@ const HomePage = () => {
               setShowModal={setShowModalClear}
             />
           )}
-
           {/* User Card */}
           {/* {loading ? (
           <div className="mt-8 text-textColor">Loading...</div>
