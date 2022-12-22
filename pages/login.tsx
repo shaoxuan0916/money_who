@@ -40,7 +40,12 @@ const LoginPage = () => {
 
     if (error) {
       console.log("error------", error)
-      setErrorMsg("Invalid email or password")
+
+      if (errorMsg.includes("network-request-failed")) {
+        setErrorMsg("Network error. Please check your network.")
+      } else {
+        setErrorMsg("Invalid email or password")
+      }
     }
   }, [user, error, loading])
 

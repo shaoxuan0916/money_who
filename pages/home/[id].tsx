@@ -8,16 +8,18 @@ import ModalAddAADrawUp from "../../components/ModalAddAADrawUp"
 import ModalClearAll from "../../components/ModalClearAll"
 import { useCollectionData } from "react-firebase-hooks/firestore"
 import { collection, deleteDoc, doc, setDoc } from "firebase/firestore"
-import { auth, db } from "../../firebase"
+import { db } from "../../firebase"
 import useMembersStore from "../../store/membersStore"
 import useAuthStore, { currencyOptions } from "../../store/authStore"
+import toast from "react-hot-toast"
 
 const HomePage = () => {
   const { userProfile, currency, updateCurrency } = useAuthStore()
 
   const path = `users/${userProfile?.uid}/members`
 
-  // TODO: update members store
+  const router = useRouter()
+
   const { updateMembers, allMembers } = useMembersStore()
 
   // query for react-firebase-hooks
@@ -63,6 +65,8 @@ const HomePage = () => {
       },
       { merge: true }
     )
+
+    toast.success("New member added")
   }
 
   // function update old member(s)'s other members
@@ -95,6 +99,7 @@ const HomePage = () => {
       handleDeleteDoc(index)
     })
 
+    toast.success("All members cleared")
     setShowModalClear(false)
   }
 
@@ -105,10 +110,14 @@ const HomePage = () => {
 
   useEffect(() => {
     updateMembers(docs)
-  }, [docs])
+
+    if (!userProfile) {
+      router.push("/login")
+    }
+  }, [docs, userProfile])
 
   return (
-    <div className="max-w-[600px] mx-auto bg-green2 min-h-[100vh]">
+    <div className="max-w-[600px] mx-auto bg-green2 min-h-[100vh] pb-10">
       <Navbar />
       {loading ? (
         <div className="mt-8 px-4 text-textColor">Loading...</div>
@@ -144,7 +153,7 @@ const HomePage = () => {
                       onChange={(e) => updateCurrency(e.target.value)}
                       name="who-pays"
                       id="who-pays"
-                      className="w-[130px] px-2 py-1 rounded-md bg-[#fff] text-textColor"
+                      className="w-[130px] px-2 py-1 rounded-md bg-green4 text-textColor"
                     >
                       <option value="">Select a currency</option>
 
@@ -175,10 +184,9 @@ const HomePage = () => {
               setShowModal={setShowModalClear}
             />
           )}
+
           {/* User Card */}
-          {/* {loading ? (
-          <div className="mt-8 text-textColor">Loading...</div>
-        ) : ( */}
+
           <div className="">
             {allMembers && allMembers.length > 0 ? (
               <UserCards
@@ -190,7 +198,6 @@ const HomePage = () => {
               <div className="text-lg mt-16 pl-2">No member yet :(</div>
             )}
           </div>
-          {/* )} */}
         </div>
       )}
     </div>

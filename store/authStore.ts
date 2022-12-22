@@ -1,7 +1,5 @@
-import { useEffect } from "react"
 import create from "zustand"
 import { persist } from "zustand/middleware"
-import { onAuthStateChanged } from "firebase/auth"
 
 export const currencyOptions = ["USD", "RMB", "RM"]
 

@@ -31,7 +31,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="sticky ">
+    <div className="shadow-md">
       <div className="h-[65px] bg-green4 sticky">
         <div className="flex items-center justify-between px-4 pt-4 pb-2 cursor-pointer">
           <div
@@ -51,7 +51,7 @@ const Navbar = () => {
         </div>
 
         {showMenu && (
-          <div className="bg-green4 text-[#666] py-4">
+          <div className="bg-green4 text-[#666] py-4 shadow-md rounded-md">
             <div>
               <div
                 className="py-4 text-center cursor-pointer"

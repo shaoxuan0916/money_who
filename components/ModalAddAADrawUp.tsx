@@ -1,6 +1,7 @@
 import { doc, updateDoc } from "firebase/firestore"
 import { NextPage } from "next"
 import React, { Dispatch, SetStateAction, useState } from "react"
+import toast from "react-hot-toast"
 import { AiOutlineClose } from "react-icons/ai"
 import { db } from "../firebase"
 import Button from "./Button"
@@ -49,7 +50,7 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
     setAddTo("")
     setClearInput(true)
 
-    // Todo: add notify
+    toast.success("AA draw up had been added")
     setShowModal(false)
   }
 
@@ -105,8 +106,8 @@ const ModalAddAADrawUp: NextPage<IModalAddAADrawUpProps> = ({
   }
 
   return (
-    <div className="relative max-w-[600px]">
-      <div className="absolute m-auto w-full h-[400px] top-[20%] left-0 p-6 z-20 shadow-lg rounded-lg bg-green4 ">
+    <div className="fixed bg-[#333]/75 top-0 bottom-0 left-0 right-0 z-999 max-w-[600px] mx-auto">
+      <div className="fixed m-auto z-1000 max-w-[600px] w-full max-h-[410px] top-0 left-0 bottom-0 right-0 p-6 rounded-lg bg-green4 shadow-2xl">
         {/* Modal Header */}
         <div className="flex justify-between">
           <h3 className="text-xl font-semibold text-textColor">AA Draw Up</h3>

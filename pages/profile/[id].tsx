@@ -1,9 +1,6 @@
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
-import { useAuthState } from "react-firebase-hooks/auth"
-import Input from "../../components/Input"
 import Navbar from "../../components/Navbar"
-import { auth } from "../../firebase"
 import { AiOutlineArrowLeft } from "react-icons/ai"
 import useAuthStore from "../../store/authStore"
 
@@ -14,16 +11,20 @@ const ProfilePage = () => {
   const [userInfo, setUserInfo] = useState<any>()
   useEffect(() => {
     setUserInfo(userProfile)
-  }, [])
+
+    if (!userProfile) {
+      router.push("/login")
+    }
+  }, [userProfile])
 
   return (
     <>
-      <div className="max-w-[600px] mx-auto  min-h-[100vh]">
+      <div className="max-w-[600px] mx-auto  min-h-[100vh] pb-10 bg-green5">
         <Navbar />
         {!userInfo ? (
           <div className="mt-8 px-4 text-textColor">Loading...</div>
         ) : (
-          <div className="mt-12 px-4">
+          <div className="mt-12 px-4 ">
             <div className="flex items-center mb-8">
               <div
                 onClick={() => router.push(`/home/${userInfo?.uid}`)}
@@ -35,8 +36,8 @@ const ProfilePage = () => {
             </div>
 
             <div className="text-xl">
-              <div className="flex">
-                <label htmlFor="" className="mr-4 font-semibold">
+              <div className="flex text-textColor">
+                <label htmlFor="" className="mr-4 font-semibold text-textColor">
                   Email :{" "}
                 </label>
                 <p>{userInfo?.email}</p>

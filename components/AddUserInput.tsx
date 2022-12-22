@@ -1,7 +1,5 @@
-import { setDoc, collection } from "firebase/firestore"
 import { NextPage } from "next"
-import React, { Dispatch, SetStateAction, useState } from "react"
-import { db } from "../firebase"
+import React, { Dispatch, SetStateAction } from "react"
 
 interface IAddUserInputProps {
   value: any
@@ -21,7 +19,7 @@ const AddUserInput: NextPage<IAddUserInputProps> = ({
         placeholder="Add new member"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="w-full px-4 rounded-l-md outline-none bg-[#fff] text-textColor"
+        className="w-full px-4 rounded-l-md outline-none bg-green4 text-textColor"
       />
 
       <div

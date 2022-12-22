@@ -91,6 +91,8 @@ const SignUpPage = () => {
         setErrorMsg("User Alreay Exist")
       } else if (errorMsg.includes("invalid-email")) {
         setErrorMsg("Invalid Email")
+      } else if (errorMsg.includes("network-request-failed")) {
+        setErrorMsg("Network error. Please check your network.")
       } else {
         setErrorMsg("Something Went Wrong. Please Try Again.")
       }

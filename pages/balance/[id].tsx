@@ -1,12 +1,9 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Navbar from "../../components/Navbar"
 import { AiOutlineArrowLeft } from "react-icons/ai"
 import { useRouter } from "next/router"
 import { NextPage } from "next"
-import { useCollectionData } from "react-firebase-hooks/firestore"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { auth, db } from "../../firebase"
-import { collection } from "firebase/firestore"
+
 import useMembersStore from "../../store/membersStore"
 import useAuthStore from "../../store/authStore"
 
@@ -14,7 +11,7 @@ interface IBalanceProps {}
 
 const Balance: NextPage<IBalanceProps> = () => {
   const { allMembers } = useMembersStore()
-  const { currency } = useAuthStore()
+  const { currency, userProfile } = useAuthStore()
 
   const router = useRouter()
 
@@ -40,10 +37,14 @@ const Balance: NextPage<IBalanceProps> = () => {
 
   useEffect(() => {
     setMembersList(allMembers)
-  }, [])
+
+    if (!userProfile) {
+      router.push("/login")
+    }
+  }, [userProfile])
 
   return (
-    <div className="max-w-[600px] mx-auto bg-white min-h-[100vh] bg-[#fff]">
+    <div className="max-w-[600px] mx-auto bg-white min-h-[100vh] bg-green5 pb-10">
       <Navbar />
 
       {!membersList ? (
@@ -85,7 +86,7 @@ const Balance: NextPage<IBalanceProps> = () => {
                 (index: any) => (
                   <div
                     key={index}
-                    className="my-4 px-4 py-4 bg-green4 flex justify-between rounded-md"
+                    className="my-4 px-4 py-4 bg-green3 flex justify-between rounded-md"
                   >
                     <h5 className="text-textColor">
                       {selectedMemberDetails.otherMembers[index].name}

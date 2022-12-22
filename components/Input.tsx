@@ -1,5 +1,4 @@
 import { NextPage } from "next"
-import { type } from "os"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 
 interface IInputProps {

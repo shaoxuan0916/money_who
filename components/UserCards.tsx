@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { BsPlusLg } from "react-icons/bs"
 import ModalAdd from "./ModalAdd"
 import { useRouter } from "next/router"
 import { NextPage } from "next"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { auth } from "../firebase"
-import Link from "next/link"
-import { CurrencyType } from "../store/authStore"
+import useAuthStore, { CurrencyType } from "../store/authStore"
 
 interface IUserCardsProps {
   membersList: any[]
@@ -19,7 +16,7 @@ const UserCards: NextPage<IUserCardsProps> = ({
   path,
   currency,
 }) => {
-  const [user] = useAuthState(auth)
+  const { userProfile } = useAuthStore()
 
   const router = useRouter()
 
@@ -30,10 +27,9 @@ const UserCards: NextPage<IUserCardsProps> = ({
   const [selectedMemberIndex, setSelectedMemberIndex] = useState<any>("")
 
   return (
-    <div className="pt-1 relative">
+    <div className="mt-2 ">
       {membersList &&
         membersList.length !== 0 &&
-        // @ts-ignore
         Object.keys(membersList).map((member: any, index) => (
           <div key={index} className="flex my-4">
             <div className="w-full cursor-pointer  py-3 px-6 bg-green4 rounded-lg flex items-center justify-between">
@@ -42,8 +38,7 @@ const UserCards: NextPage<IUserCardsProps> = ({
                 onClick={() => {
                   setSelectedMember(membersList[index].uid)
                   router.push({
-                    //@ts-ignore
-                    pathname: `/balance/${user.uid}`,
+                    pathname: `/balance/${userProfile.uid}`,
                     query: {
                       selectedMember: membersList[index].uid,
                     },
