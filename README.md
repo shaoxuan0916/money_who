@@ -2,7 +2,7 @@
 
 This is a mobile first web application.
 
-Link : https://moneywho.netlify.app/login
+Link : https://moneywho.netlify.app
 
 ###### Skill(s) that I've used in this project:
 
