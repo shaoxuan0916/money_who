@@ -7,7 +7,14 @@ import UserCards from "../../components/UserCards"
 import ModalAddAADrawUp from "../../components/ModalAddAADrawUp"
 import ModalClearAll from "../../components/ModalClearAll"
 import { useCollectionData } from "react-firebase-hooks/firestore"
-import { collection, deleteDoc, doc, setDoc } from "firebase/firestore"
+import {
+  collection,
+  deleteDoc,
+  doc,
+  setDoc,
+  query,
+  orderBy,
+} from "firebase/firestore"
 import { db } from "../../firebase"
 import useMembersStore from "../../store/membersStore"
 import useAuthStore, { currencyOptions } from "../../store/authStore"
@@ -22,18 +29,16 @@ const HomePage = () => {
 
   const { updateMembers, allMembers } = useMembersStore()
 
-  // query for react-firebase-hooks
-  const query = collection(db, path)
+  // query for react-firebase-hooks, orderby uid
+  const memberQuery = query(collection(db, path), orderBy("uid"))
 
   // from react-firebase-hooks
-  const [docs, loading, error] = useCollectionData(query)
+  const [docs, loading, error] = useCollectionData(memberQuery)
 
   const [newMember, setNewMember] = useState("")
 
   const [showAddModalAA, setShowModalAA] = useState(false)
   const [showModalClear, setShowModalClear] = useState(false)
-
-  const newMemberUid = allMembers && Object.keys(allMembers).length + 1
 
   // new member's other members
   const newMemberOtherMembers =
@@ -49,6 +54,8 @@ const HomePage = () => {
     if (newMember === "" || newMember === undefined) return
     setNewMember("")
 
+    const newMemberUid = allMembers && Object.keys(allMembers).length + 1
+
     const docRef = doc(db, path, `${newMemberUid}`)
 
     // add new member to old member(s)'s other members
@@ -62,15 +69,19 @@ const HomePage = () => {
         name: newMember,
         uid: newMemberUid,
         otherMembers: newMemberOtherMembers,
-      },
-      { merge: true }
+      }
+      // { merge: true }
     )
 
     toast.success("New member added")
   }
 
   // function update old member(s)'s other members
-  const updateOtherMembers = async (newMember: any, uid: any, index: any) => {
+  const updateOtherMembers = async (
+    newMember: any,
+    newMemberUid: any,
+    index: any
+  ) => {
     const currentDocRef = doc(db, path, `${index + 1}`)
 
     // previous other members
@@ -79,7 +90,7 @@ const HomePage = () => {
     // updated other members
     const newOtherMembersArr = [
       ...oldOtherMembers,
-      { name: newMember, uid: uid, money: 0 },
+      { name: newMember, uid: newMemberUid, money: 0 },
     ]
 
     await setDoc(

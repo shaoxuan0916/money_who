@@ -117,7 +117,7 @@ const ModalAdd: NextPage<IModalAddProps> = ({
 
   return (
     <div className="fixed bg-[#333]/75 top-0 bottom-0 left-0 right-0 z-999 max-w-[600px] mx-auto">
-      <div className="fixed m-auto max-w-[600px] max-h-[500px] overflow-y-scroll top-0 left-0 bottom-0 right-0 z-1000 p-6 z-20 shadow-2xl rounded-lg bg-green4 ">
+      <div className="fixed m-auto max-w-[600px] max-h-[500px] overflow-y-scroll top-0 left-0 bottom-0 right-0 z-1000 p-6 shadow-2xl rounded-lg bg-green4 ">
         {/* Modal Header */}
         <div className="flex justify-between">
           <h3 className="text-xl font-semibold text-textColor">
