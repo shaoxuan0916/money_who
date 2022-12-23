@@ -60,7 +60,8 @@ export default function Home() {
           <div className="text-textColor">
             <p className="text-xl text-left">
               Easiest way to share expenses with friends and family and stop
-              stressing about <i className="font-semibold">"who owes who"</i> .
+              stressing about{" "}
+              <i className="font-semibold">&quot;who owes who&quot;</i> .
             </p>
 
             <div className="flex flex-col gap-2 my-12">
