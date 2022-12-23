@@ -6,7 +6,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <div>
-        <Toaster />
+        <Toaster position="bottom-center" />
       </div>
       <Component {...pageProps} />
     </>
