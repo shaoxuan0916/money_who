@@ -32,7 +32,7 @@ const UserCards: NextPage<IUserCardsProps> = ({
         membersList.length !== 0 &&
         Object.keys(membersList).map((member: any, index) => (
           <div key={index} className="flex my-4">
-            <div className="w-full cursor-pointer  py-3 px-6 bg-green4 rounded-lg flex items-center justify-between">
+            <div className="w-full cursor-pointer  py-3 px-6 bg-green4 rounded-lg flex items-center justify-between shadow-md">
               <div
                 className="w-full"
                 onClick={() => {
