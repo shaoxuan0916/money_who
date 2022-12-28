@@ -19,13 +19,10 @@ const SignUpPage = () => {
   const [errorMsg, setErrorMsg] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-
-  // maybe not need store
-  // const { addUser } = useAuthStore()
+  const [confirmPassword, setConfirmPassword] = useState("")
 
   // Todo:
   // const [username, setUsername] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("")
 
   let router = useRouter()
 
@@ -46,11 +43,6 @@ const SignUpPage = () => {
       setErrorMsg("Password should at least 8 characters")
       return
     }
-    // Todo: password checking
-
-    // if() {
-    //   return
-    // }
 
     createUserWithEmailAndPassword(email, password)
   }
@@ -74,8 +66,6 @@ const SignUpPage = () => {
         )
         addUser(user.user)
         router.push(`/home/${user.user.uid}`)
-
-        // console.log("docRef", docRef)
       } catch (e) {
         console.error("Error adding document: ", e)
       }
