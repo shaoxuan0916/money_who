@@ -1,11 +1,11 @@
 import { doc, updateDoc } from "firebase/firestore"
 import { NextPage } from "next"
-import React, { Dispatch, SetStateAction, useState } from "react"
+import React, { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 import { AiOutlineClose } from "react-icons/ai"
 import { db } from "../firebase"
 import { CurrencyType } from "../store/authStore"
-import Input from "./Input"
+import AddAmountInput from "./AddAmountInput"
 
 interface IModalAddProps {
   path: string
@@ -24,15 +24,12 @@ const ModalAdd: NextPage<IModalAddProps> = ({
   path,
   currency,
 }) => {
-  const [amount, setAmount] = useState<number>(0)
-  const [clearInput, setClearInput] = useState<boolean>(false)
-
   const selectedMemberDetails = membersList?.find(
     (item) => item.uid === selectedMember
   )
 
   // function add money --> when click "add" button
-  const handleAddMoney = (addBy: any) => {
+  const handleAddMoney = (addBy: any, amount: any) => {
     // addTo is owner
 
     if (!amount) {
@@ -41,14 +38,12 @@ const ModalAdd: NextPage<IModalAddProps> = ({
 
     const addTo = selectedMember
 
-    setAmount(0)
-    setClearInput(true)
-    updateMoney(addTo, addBy)
+    updateMoney(addTo, addBy, amount)
 
     toast.success(`${currency} ${amount} successfully added`)
   }
 
-  const updateMoney = async (addTo: any, addBy: any) => {
+  const updateMoney = async (addTo: any, addBy: any, amount: any) => {
     // updated "addTo"'s otherMembers Array
     const updateIndex =
       selectedMemberDetails.otherMembers &&
@@ -116,47 +111,33 @@ const ModalAdd: NextPage<IModalAddProps> = ({
   }
 
   return (
-    <div className="fixed bg-[#333]/75 top-0 bottom-0 left-0 right-0 z-999 max-w-[600px] mx-auto">
-      <div className="fixed m-auto max-w-[600px] max-h-[500px] overflow-y-scroll top-0 left-0 bottom-0 right-0 z-1000 p-6 shadow-2xl rounded-lg bg-green4 ">
+    <div className="fixed bg-[#333]/75 top-0 bottom-0 left-0 right-0 z-999 max-w-[600px] mx-auto flex items-center">
+      <div className="m-auto max-w-[600px] w-full z-1000  shadow-2xl rounded-lg bg-green4 ">
         {/* Modal Header */}
-        <div className="flex justify-between">
-          <h3 className="text-xl font-semibold text-textColor">
+        <div className="flex justify-between pb-2 shadow-md">
+          <h3 className="text-xl font-semibold text-textColor pl-6 pb-2 pt-4">
             {selectedMemberDetails.name}
           </h3>
           <div
             onClick={() => setShowModal(false)}
-            className="text-2xl font-semibold cursor-pointer text-textColor"
+            className="text-2xl font-semibold cursor-pointer text-textColor pr-6 pb-2 pt-4"
           >
             <AiOutlineClose />
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="pt-4  ">
+        <div className="px-6 max-h-[400px] overflow-y-scroll">
           {membersList &&
             Object.keys(membersList).map(
               (member, index) =>
                 member !== selectedMemberIndex.toString() && (
-                  <div
-                    key={index}
-                    className="text-textColor flex items-center p-2 my-4"
-                  >
-                    <Input
-                      setClearInput={setClearInput}
-                      clearInput={clearInput}
-                      type="number"
-                      flex
-                      placeholder={currency}
-                      label={membersList[index].name}
-                      setValue={setAmount}
+                  <div key={index}>
+                    <AddAmountInput
+                      currency={currency}
+                      member={membersList[index]}
+                      handleAddMoney={handleAddMoney}
                     />
-
-                    <div
-                      onClick={() => handleAddMoney(membersList[index].uid)}
-                      className="ml-2 cursor-pointer bg-green1 text-green5 py-1 px-3 rounded-md"
-                    >
-                      Add
-                    </div>
                   </div>
                 )
             )}
