@@ -19,6 +19,7 @@ import { db } from "../../firebase"
 import useMembersStore from "../../store/membersStore"
 import useAuthStore, { currencyOptions } from "../../store/authStore"
 import toast from "react-hot-toast"
+import ModalSessionExpired from "../../components/ModalSessionExpired"
 
 const HomePage = () => {
   const { userProfile, currency, updateCurrency } = useAuthStore()
@@ -36,7 +37,7 @@ const HomePage = () => {
   const [docs, loading, error] = useCollectionData(memberQuery)
 
   const [newMember, setNewMember] = useState("")
-
+  const [sessionExpired, setSessionExpired] = useState<boolean>(false)
   const [showAddModalAA, setShowModalAA] = useState(false)
   const [showModalClear, setShowModalClear] = useState(false)
 
@@ -123,13 +124,16 @@ const HomePage = () => {
     updateMembers(docs)
 
     if (!userProfile) {
-      router.push("/login")
+      setSessionExpired(true)
     }
   }, [docs, userProfile])
 
   return (
     <div className="max-w-[600px] mx-auto bg-green2 min-h-[100vh] pb-10">
       <Navbar />
+
+      {sessionExpired && <ModalSessionExpired />}
+
       {loading ? (
         <div className="mt-8 px-4 text-textColor">Loading...</div>
       ) : (
@@ -206,7 +210,9 @@ const HomePage = () => {
                 membersList={allMembers}
               />
             ) : (
-              <div className="text-lg mt-16 pl-2">No member yet :(</div>
+              <div className="text-lg mt-16 pl-2 text-textColor">
+                No member yet :(
+              </div>
             )}
           </div>
         </div>

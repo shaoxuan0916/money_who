@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore"
 import { db } from "../../firebase"
 import { useCollectionData } from "react-firebase-hooks/firestore"
+import ModalSessionExpired from "../../components/ModalSessionExpired"
 
 interface IBalanceProps {}
 
@@ -39,6 +40,7 @@ const Balance: NextPage<IBalanceProps> = () => {
   const [settleByUid, setSettleByUid] = useState<any>()
   const [showModal, setShowModal] = useState<boolean>(false)
   const [membersList, setMembersList] = useState<any>()
+  const [sessionExpired, setSessionExpired] = useState<boolean>(false)
 
   const selectedMember = router.query.selectedMember
 
@@ -121,13 +123,15 @@ const Balance: NextPage<IBalanceProps> = () => {
     setMembersList(docs)
 
     if (!userProfile) {
-      router.push("/login")
+      setSessionExpired(true)
     }
   }, [userProfile, docs])
 
   return (
     <div className="max-w-[600px] mx-auto bg-white min-h-[100vh] bg-green3 pb-10">
       <Navbar />
+
+      {sessionExpired && <ModalSessionExpired />}
 
       {!membersList ? (
         <div className="mt-12 ml-20 text-textColor">Loading...</div>

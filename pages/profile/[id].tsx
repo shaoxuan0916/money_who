@@ -3,17 +3,20 @@ import React, { useEffect, useState } from "react"
 import Navbar from "../../components/Navbar"
 import { AiOutlineArrowLeft } from "react-icons/ai"
 import useAuthStore from "../../store/authStore"
+import ModalSessionExpired from "../../components/ModalSessionExpired"
 
 const ProfilePage = () => {
   const { userProfile } = useAuthStore()
   let router = useRouter()
 
   const [userInfo, setUserInfo] = useState<any>()
+  const [sessionExpired, setSessionExpired] = useState<boolean>(false)
+
   useEffect(() => {
     setUserInfo(userProfile)
 
     if (!userProfile) {
-      router.push("/login")
+      setSessionExpired(true)
     }
   }, [userProfile])
 
@@ -21,6 +24,8 @@ const ProfilePage = () => {
     <>
       <div className="max-w-[600px] mx-auto  min-h-[100vh] pb-10 bg-green5">
         <Navbar />
+        {sessionExpired && <ModalSessionExpired />}
+
         {!userInfo ? (
           <div className="mt-8 px-4 text-textColor">Loading...</div>
         ) : (

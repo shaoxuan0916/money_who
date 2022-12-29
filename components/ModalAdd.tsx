@@ -1,6 +1,7 @@
 import { doc, updateDoc } from "firebase/firestore"
 import { NextPage } from "next"
 import React, { Dispatch, SetStateAction } from "react"
+import { getDatabase, ref, onDisconnect } from "firebase/database"
 import toast from "react-hot-toast"
 import { AiOutlineClose } from "react-icons/ai"
 import { db } from "../firebase"
@@ -29,7 +30,7 @@ const ModalAdd: NextPage<IModalAddProps> = ({
   )
 
   // function add money --> when click "add" button
-  const handleAddMoney = (addBy: any, amount: any) => {
+  const handleAddMoney = async (addBy: any, amount: any) => {
     // addTo is owner
 
     if (!amount) {
@@ -38,7 +39,13 @@ const ModalAdd: NextPage<IModalAddProps> = ({
 
     const addTo = selectedMember
 
-    updateMoney(addTo, addBy, amount)
+    await updateMoney(addTo, addBy, amount)
+      .then((doc) => {
+        console.log("success", doc)
+      })
+      .catch((error) => {
+        console.log("errorrrrrr", error)
+      })
 
     toast.success(`${currency} ${amount} successfully added`)
   }
@@ -99,12 +106,11 @@ const ModalAdd: NextPage<IModalAddProps> = ({
     membersList &&
       (await Promise.all([
         // update addTo
-        await updateDoc(addToRef, {
+        updateDoc(addToRef, {
           otherMembers: updatedAddToOtherMembersArr,
         }),
-
         // update addBy
-        await updateDoc(addByRef, {
+        updateDoc(addByRef, {
           otherMembers: updatedAddByOtherMembersArr,
         }),
       ]))
